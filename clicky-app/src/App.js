@@ -64,7 +64,7 @@ class App extends Component {
   };
 
   render() {
-    const shuffledFriends = shuffle(this.state.friends);
+    const shuffledCards = shuffle(this.state.friends);
     return (
       <Wrapper>
         <Title>Friends List
