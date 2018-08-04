@@ -7,97 +7,81 @@ import "./App.css";
 
 function shuffle(array) {
   for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
+    let j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
 }
 
 class App extends Component {
-  // Setting this.state.friends to the friends json array
   state = {
     friends,
     score: 0,
     topScore: 0,
-    clickedFriends: []
+    clickedFriends: [],
+    isCorrect: ""
   };
+
 
   handleClick = id => {
     if (this.state.clickedFriend.indexOf(id) === -1) {
       this.handleIncrement();
       this.setState({ clickedFriend: this.state.clickedFriend.concat(id) });
-      this.makeShuffle();
     } else {
       this.handleReset();
     }
   };
 
-  clickedImage = id => {
-    let clickedFriends = this.state.clickedFriends;
-    let score = this.state.score;
-    let topScore = this.state.topScore;
-
-    if (clickedFriends.indexOf(id) === -1) {
-      clickedFriends.push(id);
-      this.handleIncrement();
-      this.makeShuffle();
-    } else if (this.state.score === 12) {
-      alert("You Win!")
-      this.setState({
-        score: 0,
-        clickedFriends: []
-      });
-    } else {
-      this.setState({
-        score: 0,
-        clickedFriends: []
-      });
-      alert("You Lose!")
-    }
-
-    if (score > topScore) {
-      this.setState({
-        topScore: score
-      })
-    }
-    this.makeShuffle(clickedFriends);
-  };
   handleIncrement = () => {
-
-    this.setState({ score: this.state.score + 1 });
+    const updateScore = this.state.score + 1
+    this.setState({
+      score: updateScore,
+      isCorrect: ""
+    });
+    if (updateScore >= this.state.topScore) {
+      this.setState({ topScore: updateScore });
+    }
+    else if (updateScore === 12) {
+      this.setState({ isCorrect: "Winner!" })
+    }
+    this.makeShuffle();
   };
 
   handleReset = () => {
     this.setState({
       currentScore: 0,
       topScore: this.state.topScore,
-      clicked: []
+      clicked: [],
+      isCorrect: "reset game"
     });
-    this.makeShuffle(friends);
+    this.makeShuffle();
   };
 
+
   makeShuffle = () => {
-    let shuffleFriends = shuffleFriends(friends);
-    this.setState({ friends: shuffleFriends });
+    let shuffledCards = shuffle(friends);
+    this.setState({ friends: shuffledCards });
   };
 
   render() {
     const shuffledFriends = shuffle(this.state.friends);
     return (
       <Wrapper>
-        <Title>Friends List</Title>
-        {shuffledFriends.map(friend => (
+        <Title>Friends List
+          score={this.state.score}
+          topScore={this.state.topScore}
+          isCorrect={this.state.isCorrect}
+        </Title>
+
+        {this.state.friends.map(friend => (
           <FriendCard
             key={friend.id}
-            id={friend.id}
-            image={friend.image}
-            clickedImage={this.clickedImage}
+            handleClick={this.handleClick}
             handleIncrement={this.handleIncrement}
             handleReset={this.handleReset}
             makeShuffle={this.makeShuffle}
-
+            id={friend.id}
+            image={friend.image}
           />
         ))}
       </Wrapper>
